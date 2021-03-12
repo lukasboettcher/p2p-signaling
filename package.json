@@ -1,0 +1,23 @@
+{
+  "name": "p2p-signaling",
+  "version": "1.0.0",
+  "description": "A simple peer to peer signaling server - using socket.io - to establish webRTC connections between users.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukasboettcher/p2p-signaling.git"
+  },
+  "author": "Lukas Böttcher <>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lukasboettcher/p2p-signaling/issues"
+  },
+  "homepage": "https://github.com/lukasboettcher/p2p-signaling#readme",
+  "dependencies": {
+    "socket.io": "^4.0.0"
+  }
+}
