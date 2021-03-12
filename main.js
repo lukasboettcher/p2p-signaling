@@ -1,4 +1,9 @@
-const io = require("socket.io")(3000);
+const io = require("socket.io")(3000, {
+  cors: {
+    origin: "https://p2p.bttchr.com",
+    methods: ["GET", "POST"]
+  }
+});
 
 io.of("/comm").on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
