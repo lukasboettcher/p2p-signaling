@@ -1,20 +1,20 @@
 const io = require("socket.io")(3000);
 
-io.of("/comm").on('connection', socket => {
+io.of("/screen").on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
         socket.join(roomId)
         socket.to(roomId).emit('user-connected', userId)
 
         socket.on("offer", (to, from, signal) => {
-            io.of("/comm").to(to).emit("offer", from, signal)
+            io.of("/screen").to(to).emit("offer", from, signal)
         })
 
         socket.on("answer", (to, from, signal) => {
-            io.of("/comm").to(to).emit("answer", from, signal)
+            io.of("/screen").to(to).emit("answer", from, signal)
         })
 
         socket.on("ice-candidate", (to, from, candidate) => {
-            io.of("/comm").to(to).emit("ice-candidate", from, candidate)
+            io.of("/screen").to(to).emit("ice-candidate", from, candidate)
         })
 
         socket.on("stop-stream", () => {
