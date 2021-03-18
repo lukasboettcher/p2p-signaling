@@ -29,33 +29,34 @@ io.of("/screen").on('connection', socket => {
 
 const registry = {}
 
-io.of("/files").on('connect', socket => {
+io.of('/files').on('connect', socket => {
     // console.log('client connected with id: ', socket.id)
-
     socket.on('disconnect', () => {
         // console.log('client disconnected with id: ', socket.id)
         delete registry[socket.id]
-        io.of("/files").emit('users', registry)
+        io.of('/files').emit('users', registry)
     })
 
     socket.on('register', (name) => {
         registry[socket.id] = { id: socket.id, name: name }
         // console.log('user registered with id: ', socket.id)
         // console.log(registry)
-        io.of("/files").emit('users', registry)
+        io.of('/files').emit('users', registry)
     })
 
-    socket.on('solicit', data => {
-        io.of("/files").to(data.toSolicit).emit('solicit', { fromSolicit: socket.id, signal: data.signal })
+    socket.on('offer', (to, offer) => {
+        // console.log("forwading offer");
+        io.of('/files').to(to).emit('offer', socket.id, offer)
     })
 
-    socket.on('response', data => {
-        // console.log('got resp for: ', data)
-        io.of("/files").to(data.toRespond).emit('response', { fromResponse: socket.id, signal: data.signal })
+    socket.on('answer', (to, answer) => {
+        // console.log("forwading answer");
+        io.of('/files').to(to).emit('answer', socket.id, answer)
     })
 
-    socket.on('reject', data => {
-        io.of("/files").to(data.for).emit('rejected', { rejectedFrom: socket.id })
+    socket.on('candidate', (to, candidate) => {
+        // console.log("forwading candidate");
+        io.of('/files').to(to).emit('candidate', socket.id, candidate)
     })
 
 })
