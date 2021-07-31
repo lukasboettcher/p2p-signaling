@@ -1,8 +1,28 @@
 version: "3"
 services:
-  p2p-signalserver:
+  signal-server:
     build: 
       context: .
     restart: always
+    expose:
+      - 3000
+    networks:
+      - proxy_network
+
+  webserver:
+    image: nginx:latest
+    depends_on:
+      - signal-server
+    restart: always
     ports:
-      - 3001:3000
+      - 443:443
+      - 80:80
+    volumes:
+      - /etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - proxy_network
+
+networks:
+  proxy_network:
+    name: proxy_network
