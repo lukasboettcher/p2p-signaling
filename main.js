@@ -61,9 +61,38 @@ io.of('/files').on('connect', socket => {
 
 })
 
-const CANVAS_DATA = { lines: [], texts: [] }
+const CANVAS_DATA = new Object();
 
 io.of("/draw").on("connection", (socket) => {
+
+    socket.on('join-room', (roomId) => {
+        if (!CANVAS_DATA[roomId]) {
+            CANVAS_DATA[roomId] = { lines: [], texts: [] };
+            // remove the 
+            setTimeout(() => {
+                delete CANVAS_DATA[roomId];
+                console.warn("Removing the canvas room with id ", roomId, "after one day.");
+            }, 1 * 24 * 60 * 60 * 1000)
+        }
+
+        socket.join(roomId)
+
+        socket.emit('add', CANVAS_DATA)
+        socket.on('add', data => {
+            data.lines.forEach(e => {
+                CANVAS_DATA[roomId].lines.push(e)
+            })
+            data.texts.forEach(e => {
+                CANVAS_DATA[roomId].texts.push(e)
+            })
+            socket.to(roomId).emit('add', CANVAS_DATA[roomId])
+        })
+        socket.on('clear', () => {
+            CANVAS_DATA[roomId].lines = [];
+            CANVAS_DATA[roomId].texts = [];
+            socket.to(roomId).emit('clear')
+        })
+    })
 
     socket.emit('add', CANVAS_DATA)
     socket.on('add', data => {
@@ -82,7 +111,7 @@ io.of("/draw").on("connection", (socket) => {
     })
 });
 
-io.of("chat").on("connection", (socket) => {
+io.of("/chat").on("connection", (socket) => {
     socket.on('msg', text => {
         socket.broadcast.emit('msg', text)
     })
