@@ -60,3 +60,30 @@ io.of('/files').on('connect', socket => {
     })
 
 })
+
+const CANVAS_DATA = { lines: [], texts: [] }
+
+io.of("/draw").on("connection", (socket) => {
+
+    socket.emit('add', CANVAS_DATA)
+    socket.on('add', data => {
+        data.lines.forEach(e => {
+            CANVAS_DATA.lines.push(e)
+        })
+        data.texts.forEach(e => {
+            CANVAS_DATA.texts.push(e)
+        })
+        socket.broadcast.emit('add', CANVAS_DATA)
+    })
+    socket.on('clear', () => {
+        CANVAS_DATA.lines = [];
+        CANVAS_DATA.texts = [];
+        socket.broadcast.emit('clear')
+    })
+});
+
+io.of("chat").on("connection", (socket) => {
+    socket.on('msg', text => {
+        socket.broadcast.emit('msg', text)
+    })
+})
