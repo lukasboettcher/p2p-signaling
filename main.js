@@ -70,15 +70,19 @@ io.of("/draw").on("connection", (socket) => {
             CANVAS_DATA[roomId] = { lines: [], texts: [] };
             // remove the 
             setTimeout(() => {
+                io.of("/draw").in(roomId).emit('clear');
                 delete CANVAS_DATA[roomId];
                 console.warn("Removing the canvas room with id ", roomId, "after one day.");
-            }, 1 * 24 * 60 * 60 * 1000)
+            },
+                30 * 24 * 60 * 60 * 1000
+            )
         }
 
         socket.join(roomId)
 
-        socket.emit('add', CANVAS_DATA)
+        socket.emit('add', CANVAS_DATA[roomId])
         socket.on('add', data => {
+            console.log("got add");
             data.lines.forEach(e => {
                 CANVAS_DATA[roomId].lines.push(e)
             })
@@ -92,22 +96,6 @@ io.of("/draw").on("connection", (socket) => {
             CANVAS_DATA[roomId].texts = [];
             socket.to(roomId).emit('clear')
         })
-    })
-
-    socket.emit('add', CANVAS_DATA)
-    socket.on('add', data => {
-        data.lines.forEach(e => {
-            CANVAS_DATA.lines.push(e)
-        })
-        data.texts.forEach(e => {
-            CANVAS_DATA.texts.push(e)
-        })
-        socket.broadcast.emit('add', CANVAS_DATA)
-    })
-    socket.on('clear', () => {
-        CANVAS_DATA.lines = [];
-        CANVAS_DATA.texts = [];
-        socket.broadcast.emit('clear')
     })
 });
 
