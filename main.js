@@ -74,7 +74,7 @@ io.of("/draw").on("connection", (socket) => {
                 delete CANVAS_DATA[roomId];
                 console.warn("Removing the canvas room with id ", roomId, "after one day.");
             },
-                30 * 24 * 60 * 60 * 1000
+                20 * 24 * 60 * 60 * 1000
             )
         }
 
