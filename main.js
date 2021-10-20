@@ -82,7 +82,6 @@ io.of("/draw").on("connection", (socket) => {
 
         socket.emit('add', CANVAS_DATA[roomId])
         socket.on('add', data => {
-            console.log("got add");
             data.lines.forEach(e => {
                 CANVAS_DATA[roomId].lines.push(e)
             })
