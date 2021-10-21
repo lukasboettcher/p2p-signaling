@@ -95,6 +95,9 @@ io.of("/draw").on("connection", (socket) => {
             CANVAS_DATA[roomId].texts = [];
             socket.to(roomId).emit('clear')
         })
+        socket.on('leave-room', () => {
+            socket.leave(roomId)
+        })
     })
 });
 
