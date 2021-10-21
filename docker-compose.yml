@@ -25,4 +25,3 @@ services:
 
 networks:
   proxy_network:
-    name: proxy_network
