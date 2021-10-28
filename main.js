@@ -80,15 +80,10 @@ io.of("/draw").on("connection", (socket) => {
 
         socket.join(roomId)
 
-        socket.emit('add', CANVAS_DATA[roomId])
-        socket.on('add', data => {
-            data.lines.forEach(e => {
-                CANVAS_DATA[roomId].lines.push(e)
-            })
-            data.texts.forEach(e => {
-                CANVAS_DATA[roomId].texts.push(e)
-            })
-            socket.to(roomId).emit('add', CANVAS_DATA[roomId])
+        socket.emit('add-line', CANVAS_DATA[roomId])
+        socket.on('add-line', line => {
+            CANVAS_DATA[roomId].lines.push(line)
+            socket.to(roomId).emit('add-line', CANVAS_DATA[roomId])
         })
         socket.on('clear', () => {
             CANVAS_DATA[roomId].lines = [];
@@ -97,6 +92,11 @@ io.of("/draw").on("connection", (socket) => {
         })
         socket.on('leave-room', () => {
             socket.leave(roomId)
+        })
+        socket.on('pop', () => {
+            CANVAS_DATA[roomId].lines.pop();
+            io.of("/draw").in(roomId).emit('clear');
+            io.of("/draw").in(roomId).emit('add-line', CANVAS_DATA[roomId]);
         })
     })
 });
