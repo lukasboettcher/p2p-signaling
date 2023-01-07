@@ -8,6 +8,10 @@ docker run -d --restart unless-stopped --name p2p-signaling p2p-signaling
 ```
 ## or run latest image from ghcr
 ```
-docker run -d --restart unless-stopped --name p2p-signaling ghcr.io/lukasboettcher/p2p-signaling:master
+docker run -d --restart unless-stopped --name p2p-signaling \
+	-l traefik.enable=true \
+	-l traefik.http.routers.nginx.rule="Host(\`<HOST>\`)" \
+	-l traefik.http.routers.nginx.entrypoints=websecure \
+ 	-l traefik.http.routers.signal.tls.certresolver=letsencrypt \
+  ghcr.io/lukasboettcher/p2p-signaling:master
 ```
-
