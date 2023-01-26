@@ -92,12 +92,13 @@ address = "0.0.0.0:3478"
 # WARNING: It shouldn't overlap webrtc.portrange
 # Format: [min, max]
 # portrange = [5201, 5400]
+portrange = [49160, 49200]
 [turn.auth]
 # Use an auth secret to generate long-term credentials defined in RFC5389-10.2
 # NOTE: This takes precedence over `credentials` if defined.
 # secret = "secret"
 # Sets the credentials pairs
-credentials = "sfuser=sfuturnpw"
+credentials = "turnuser=turnsecret"
 
 [log]
 # 0 - INFO 1 - DEBUG 2 - TRACE
