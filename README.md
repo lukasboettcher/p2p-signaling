@@ -25,3 +25,9 @@ docker run -d --restart unless-stopped -p 5000:5000/udp --name ion-sfu \
 	-l traefik.http.services.signal-multi.loadbalancer.server.port=7000 \
   ghcr.io/lukasboettcher/p2p-signaling-multiscreen:master
 ```
+Coturn docker container.
+```
+docker run -d --name coturn --restart unless-stopped \
+	-p 3478:3478 -p 3478:3478/udp -p 49160-49200:49160-49200/udp \
+	coturn/coturn --min-port=49160 --max-port=49200 -au <user>:<secret>
+```
