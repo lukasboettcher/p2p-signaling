@@ -80,7 +80,7 @@ keepalive = 2
 
 [turn]
 # Enables embeded turn server
-enabled = true
+enabled = false
 # Sets the realm for turn server
 realm = "ion"
 # The address the TURN server will listen on.
@@ -98,7 +98,7 @@ portrange = [49160, 49200]
 # NOTE: This takes precedence over `credentials` if defined.
 # secret = "secret"
 # Sets the credentials pairs
-credentials = "turnuser=turnsecret"
+credentials = "user=secret"
 
 [log]
 # 0 - INFO 1 - DEBUG 2 - TRACE
