@@ -17,7 +17,7 @@ docker run -d --restart unless-stopped --name p2p-signaling \
 ```
 Additionally run the ion-sfu for 8+ users in a WebRTC session.
 ```
-docker run -d --restart unless-stopped -p 5000:5000/udp --name ion-sfu \
+docker run -d --restart unless-stopped -p 5000:5000/udp -p 3478:3478/udp --name ion-sfu \
 	-l traefik.enable=true \
 	-l traefik.http.routers.signal-multi.rule="Host(\`<HOST>\`)" \
 	-l traefik.http.routers.signal-multi.entrypoints=websecure \
