@@ -36,7 +36,10 @@ wss.on('connection', function connection(ws, req) {
     console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "new websocket connection from ip: ", ws.clientIp, "for protocol: ", ws.protocol)
 
     ws.send(JSON.stringify({ id: ws.id }));
-    ws.on('close', () => broadcast(ws, { disconnected: ws.id }));
+    ws.on('close', () => {
+        console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "client left")
+        broadcast(ws, { disconnected: ws.id });
+    });
 
     if (ws.protocol === 'draw') {
         ws.on('message', function message(rawData, isBinary) {
