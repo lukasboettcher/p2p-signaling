@@ -33,11 +33,11 @@ wss.on('connection', function connection(ws, req) {
     ws.on('pong', heartbeat);
     ws.rooms = new Set();
     ws.id = randomUUID();
-    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "new websocket connection from ip: ", ws.clientIp, "for protocol: ", ws.protocol, `current clients: [${wss.clients.length}]`)
+    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "new websocket connection from ip: ", ws.clientIp, "for protocol: ", ws.protocol, `current clients: [${wss.clients.size}]`)
 
     ws.send(JSON.stringify({ id: ws.id }));
     ws.on('close', () => {
-        console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "client left", `current clients: [${wss.clients.length}]`)
+        console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "client left", `current clients: [${wss.clients.size}]`)
         broadcast(ws, { disconnected: ws.id });
     });
 
