@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import WebSocket, { WebSocketServer } from 'ws';
 
+console.log(new Date().toISOString(), "[INFO]", "starting p2p-signaling server")
 const wss = new WebSocketServer({ port: 3000, clientTracking: true });
 
 // function handleProtocols(protocols, request) {
@@ -23,12 +24,22 @@ const pingInterval = setInterval(function ping() {
 const CANVAS_DATA = new Object();
 const allowedEntries = ['to', 'answer', 'offer', 'join', 'ice', 'stop', 'hello', 'msg']
 
-wss.on('connection', function connection(ws) {
+wss.on('connection', function connection(ws, req) {
+    const ip = req.socket.remoteAddress;
+    const forwarded = req.headers['x-forwarded-for'];
+    const clientIp = forwarded ? forwarded.split(',')[0].trim() : ip;
+    ws.clientIp = clientIp
+
     ws.on('pong', heartbeat);
     ws.rooms = new Set();
     ws.id = randomUUID();
+    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "new websocket connection from ip: ", ws.clientIp, "for protocol: ", ws.protocol)
+
     ws.send(JSON.stringify({ id: ws.id }));
-    ws.on('close', () => broadcast(ws, { disconnected: ws.id }));
+    ws.on('close', () => {
+        console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "client left")
+        broadcast(ws, { disconnected: ws.id });
+    });
 
     if (ws.protocol === 'draw') {
         ws.on('message', function message(rawData, isBinary) {
@@ -37,17 +48,19 @@ wss.on('connection', function connection(ws) {
                 data = JSON.parse(rawData);
                 data = Object.fromEntries(Object.entries(data).filter(([k, v]) => v != null && ['join', 'leave', 'line', 'clear', 'pop'].includes(k)));
             } catch (error) {
+                console.warn(new Date().toISOString(), "[ERROR]", `(${ws.id})`, "client sent malformed data, terminating connection", "for protocol: ", ws.protocol)
                 ws.send('Error parsing JSON, terminating!')
                 ws.terminate();
                 return;
             }
             if (data.join) {
+                console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "joined room: ", data.join, "for protocol: ", ws.protocol)
                 if (!CANVAS_DATA[data.join]) {
                     CANVAS_DATA[data.join] = { lines: [], texts: [] };
-                    // remove the 
+                    // remove the room
                     setTimeout(() => {
                         delete CANVAS_DATA[data.join];
-                        console.warn("Removing the canvas room with id ", data.join, "after five day.");
+                        console.warn(new Date().toISOString(), "[WARN]", `(${ws.id})`, "Removing the canvas room with id ", data.join, "after five day.", "for protocol: ", ws.protocol)
                     },
                         5 * 24 * 60 * 60 * 1000
                     )
@@ -88,6 +101,7 @@ wss.on('connection', function connection(ws) {
                 return;
             }
             if (data.join) {
+                console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "joined room: ", data.join, "for protocol: ", ws.protocol)
                 ws.rooms.add(data.join);
                 ws.send(JSON.stringify({ users: getUsers(ws) }))
             }
@@ -109,6 +123,7 @@ wss.on('close', function close() {
 });
 
 function broadcast(ws, d) {
+    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "broadcast for protocol: ", ws.protocol)
     const data = { ...d, from: ws.id, users: getUsers(ws) };
     wss.clients.forEach(function each(client) {
         if (client !== ws && client.readyState === WebSocket.OPEN && client.protocol === ws.protocol && intersect(ws.rooms, client.rooms)) {

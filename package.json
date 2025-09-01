@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/lukasboettcher/p2p-signaling#readme",
   "dependencies": {
-    "ws": "^8.5.0"
+    "ws": "^8.18.3"
   },
   "type": "module"
 }
