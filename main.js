@@ -33,11 +33,11 @@ wss.on('connection', function connection(ws, req) {
     ws.on('pong', heartbeat);
     ws.rooms = new Set();
     ws.id = randomUUID();
-    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "new websocket connection from ip: ", ws.clientIp, "for protocol: ", ws.protocol)
+    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "new websocket connection from ip: ", ws.clientIp, "for protocol: ", ws.protocol, `current clients: [${wss.clients.length}]`)
 
     ws.send(JSON.stringify({ id: ws.id }));
     ws.on('close', () => {
-        console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "client left")
+        console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "client left", `current clients: [${wss.clients.length}]`)
         broadcast(ws, { disconnected: ws.id });
     });
 
@@ -123,7 +123,7 @@ wss.on('close', function close() {
 });
 
 function broadcast(ws, d) {
-    console.log(new Date().toISOString(), "[INFO]", `(${ws.id})`, "broadcast for protocol: ", ws.protocol)
+    // console.log(new Date().toISOString(), "[DEBUG]", `(${ws.id})`, "broadcast for protocol: ", ws.protocol)
     const data = { ...d, from: ws.id, users: getUsers(ws) };
     wss.clients.forEach(function each(client) {
         if (client !== ws && client.readyState === WebSocket.OPEN && client.protocol === ws.protocol && intersect(ws.rooms, client.rooms)) {
